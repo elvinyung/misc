@@ -1,20 +1,19 @@
 var EventLoop = function EventLoop() {
-  this.callback = {}; 
+  this.callbacks = {}; 
   this.events = [];
 }
 
 EventLoop.prototype.on = function on(evt, callback) {
-  if (this.callback[evt]) {
-    var oldCb = this.callback[evt]; 
-    this.callback[evt] = function() {
+  if (this.callbacks[evt]) {
+    var oldCb = this.callbacks[evt]; 
+    this.callbacks[evt] = function() {
       callback(); 
       oldCb();
     };
-  } 
-  else 
-  {
-    this.callback[evt] = callback;
+    return;
   }
+  
+  this.callbacks[evt] = callback;
 }
 
 EventLoop.prototype.trigger = function trigger(evt) {
@@ -28,7 +27,7 @@ EventLoop.prototype.start = function start() {
   while (this.events.length > 0) {
     this.started = true; 
     var evt = this.events.shift(); 
-    this.callback[evt]();
+    this.callbacks[evt]();
   } 
   this.started = false;
 }
